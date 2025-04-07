@@ -1,0 +1,36 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        default: secret-token
+        description: Access token for the MCP server
+      transport:
+        type: string
+        default: stdio
+        description: "Transport type: 'stdio' or 'sse'"
+      sseAddress:
+        type: string
+        default: localhost:8000
+        description: SSE server address (used if transport is set to 'sse')
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => {
+      const args = ['--token', config.token, '--transport', config.transport];
+      if(config.transport === 'sse') {
+        args.push('--sse-address', config.sseAddress);
+      }
+      return { command: './mcp_demo', args };
+    }
+  exampleConfig:
+    token: secret-token
+    transport: stdio
+    sseAddress: localhost:8000
